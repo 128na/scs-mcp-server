@@ -15,8 +15,8 @@ code .
 
 3. Open the ".vscode/mcp.json" and Run server.
 
-![Server](./documents/server.png "Server")
+![Server](./document/server.png "Server")
 
 4. Ask a question via chat in "Agent mode".
 
-![Demo](./documents/demo.png "Demo")
+![Demo](./document/demo.png "Demo")
