@@ -9,14 +9,15 @@
   "author": "128Na",
   "license": "MIT",
   "bin": {
-    "scs-mcp-server": "bin.js"
+    "scs-mcp-server": "src/index.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.10.2",
-    "ts-node": "^10.9.2",
-    "@types/node": "^22.15.2",
-    "typescript": "^5.8.3",
     "axios": "^1.9.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "@types/node": "^22.15.2",
+    "typescript": "^5.8.3"
+  }
 }
