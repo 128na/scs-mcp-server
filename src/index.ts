@@ -19,7 +19,7 @@ server.tool("search",
     },
     async ({ keyword, paks, sites, page }, extra) => {
         const content: { type: "text"; text: string }[] = [];
-        content.push({ type: "text", text: `検索条件：キーワード：${keyword}、パックセット：${paks.join(',')}、サイト：${sites.join(',')}` });
+        content.push({ type: "text", text: `検索条件：キーワード：${keyword}、パックセット：${paks.join(',')}、サイト：${sites.join(',')}、ページ：${page}` });
         try {
             const q = new URLSearchParams();
             q.set('keyword', keyword);
