@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { CallToolRequest, CallToolResult } from "@modelcontextprotocol/sdk/types";
 import axios, { AxiosError } from 'axios';
 import { z } from "zod";
 
@@ -16,8 +17,9 @@ server.tool("search",
         sites: z.array(z.enum(['japan', 'twitrans', 'portal'])),
         page: z.number().optional().default(1)
     },
-    async ({ keyword, paks, sites, page }) => {
-        console.info({ keyword, paks, sites, page });
+    async ({ keyword, paks, sites, page }, extra) => {
+        const content: { type: "text"; text: string }[] = [];
+        content.push({ type: "text", text: `検索条件：キーワード：${keyword}、パックセット：${paks.join(',')}、サイト：${sites.join(',')}` });
         try {
             const q = new URLSearchParams();
             q.set('keyword', keyword);
@@ -30,38 +32,25 @@ server.tool("search",
                     'Accept': 'application/json',
                 },
             });
-            console.error('response::' + JSON.stringify(res.data.data));
-            const formatted = res.data.data.map((r: any, i: number) =>
-                `${i + 1}. [${r.title}](${r.url})（サイト：${r.site}、パックセット：${r.paks.join(',')}）`
-            ).join('\n');
-            console.info({ formatted });
 
-            return {
-                content: [{
-                    type: "text",
-                    text: res.data.data.length > 0
-                        ? `検索結果:\n${formatted}`
-                        : '該当するアドオン記事が見つかりませんでした。',
-                }]
+            if (res.data.data.length === 0) {
+                content.push({ type: "text", text: '該当するアドオンが見つかりませんでした。' });
+            } else {
+                content.push({ type: "text", text: `検索結果は${res.data.meta.total}件。1ページ辺り${res.data.meta.per_page}件。${res.data.meta.last_page}ページ中${res.data.meta.current_page}ページ目の結果を取得。` });
+                content.push({
+                    type: "text", text: res.data.data.map((r: any, i: number) =>
+                        `${i + 1}. [${r.title}](${r.url})（サイト：${r.site}、パックセット：${r.paks.join(',')}）`
+                    ).join('\n')
+                });
             }
         } catch (error) {
             if (error instanceof AxiosError) {
-                console.error(error.response?.data);
-                return {
-                    content: [{
-                        type: 'text',
-                        json: true,
-                        text: JSON.stringify(error.response)
-                    }]
-                }
-            }
-            return {
-                content: [{
-                    type: 'text',
-                    text: '検索中に不明なエラーが発生しました'
-                }]
+                content.push({ type: "text", text: '検索中にエラーが発生しました。' });
+            } else {
+                content.push({ type: "text", text: '検索中に不明なエラーが発生しました。' });
             }
         }
+        return { content };
     },
 );
 
