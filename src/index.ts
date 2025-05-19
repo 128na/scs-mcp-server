@@ -10,11 +10,11 @@ const server = new McpServer(
     { name: appName, version: appVersion },
 );
 
-server.tool("search",
+server.tool("simutrans-cross-search",
     {
         keyword: z.string().describe("検索キーワード（例：駅舎、道路など）"),
-        paks: z.array(z.enum(['64', '128', '128-japan'])),
-        sites: z.array(z.enum(['japan', 'twitrans', 'portal'])),
+        paks: z.array(z.enum(['64', '128', '128-japan'])).optional().default(['64', '128', '128-japan']).describe("パックセット(例:64、128、128-japan)"),
+        sites: z.array(z.enum(['japan', 'twitrans', 'portal'])).optional().default(['japan', 'twitrans', 'portal']).describe("サイト(japan: 日本語化wiki, twitrans: Simutrans的な実験室, portal: Simutrans Addon Porta)"),
         page: z.number().optional().default(1)
     },
     async ({ keyword, paks, sites, page }, extra) => {
